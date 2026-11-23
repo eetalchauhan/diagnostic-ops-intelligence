@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: diagnostic-ops-intelligence-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/diagnostic_ops
+    username: postgres
+    password: ${PGPASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  cors:
+    allowed-origins: "http://localhost:5173,http://127.0.0.1:5173"
+  ml-service:
+    base-url: "http://localhost:8000"
+
+logging:
+  level:
+    root: INFO
+    com.diagnosticops: DEBUG
+    org.hibernate.SQL: WARN

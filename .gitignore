@@ -1,0 +1,27 @@
+﻿# Node / React
+node_modules/
+dist/
+.vite/
+
+# Java / Maven
+target/
+*.jar
+*.war
+.mvn/
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+*.egg-info/
+
+# Environment & Secrets
+.env
+*.local
+
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
