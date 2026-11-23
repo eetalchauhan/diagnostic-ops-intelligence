@@ -5,7 +5,7 @@ import LiveOperationsTab from './components/LiveOperationsTab';
 import DemandForecastingTab from './components/DemandForecastingTab';
 import SampleIntakeSimulatorTab from './components/SampleIntakeSimulatorTab';
 import DispatchSimulationTab from './components/DispatchSimulationTab';
-import { fetchDashboard } from './services/api';
+import { fetchDashboard, API_BASE_URL } from './services/api';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function App() {
@@ -28,7 +28,7 @@ export default function App() {
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
       setError(
-        err.message || 'Unable to connect to Core Backend on http://localhost:8080/api/v1'
+        err.message || `Unable to connect to Core Backend on ${API_BASE_URL}`
       );
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ export default function App() {
             <div className="flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
               <span>
-                Backend Connection Error: {error}. Ensure Spring Boot backend is active on <code className="font-mono">http://localhost:8080</code>.
+                Backend Connection Error: {error}. Ensure Spring Boot backend is active on <code className="font-mono">{API_BASE_URL}</code>.
               </span>
             </div>
             <button

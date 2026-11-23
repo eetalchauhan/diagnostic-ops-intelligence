@@ -1,18 +1,18 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: diagnostic-ops-intelligence-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/diagnostic_ops
-    username: postgres
-    password: ${PGPASSWORD:postgres}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/diagnostic_ops}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:${PGPASSWORD:postgres}}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 15
-      minimum-idle: 5
+      maximum-pool-size: 10
+      minimum-idle: 2
       idle-timeout: 30000
       connection-timeout: 20000
 
@@ -30,7 +30,7 @@ app:
   cors:
     allowed-origins: "http://localhost:5173,http://127.0.0.1:5173"
   ml-service:
-    base-url: "http://localhost:8000"
+    base-url: ${ML_SERVICE_URL:http://localhost:8000}
 
 logging:
   level:

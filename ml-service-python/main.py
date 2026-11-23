@@ -40,6 +40,7 @@ app.add_middleware(
 # ------------------------------------------------------------------------------
 # PostgreSQL Connection Setup
 # ------------------------------------------------------------------------------
+DATABASE_URL = os.environ.get("DATABASE_URL")
 PG_HOST = os.environ.get("PGHOST", "localhost")
 PG_PORT = int(os.environ.get("PGPORT", "5432"))
 PG_DATABASE = os.environ.get("PGDATABASE", "diagnostic_ops")
@@ -49,6 +50,15 @@ CANDIDATE_PASSWORDS = [PG_PASSWORD, "postgres", "Ankit@2002"]
 
 
 def get_db_connection():
+    db_url = os.environ.get("DATABASE_URL")
+    if db_url:
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        try:
+            return psycopg2.connect(db_url)
+        except Exception as e:
+            print(f"Warning: Failed to connect via DATABASE_URL: {e}", file=sys.stderr)
+
     passwords = []
     for p in CANDIDATE_PASSWORDS:
         if p and p not in passwords:
