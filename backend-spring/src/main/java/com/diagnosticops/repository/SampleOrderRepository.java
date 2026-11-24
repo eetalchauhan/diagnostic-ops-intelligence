@@ -34,6 +34,9 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Long> 
     @Query("SELECT MAX(s.collectedAt) FROM SampleOrder s")
     Optional<LocalDateTime> findLatestCollectedAt();
 
+    @Query("SELECT MAX(s.collectedAt) FROM SampleOrder s WHERE s.collectedAt < :cutoff")
+    Optional<LocalDateTime> findLatestCollectedAtBefore(@Param("cutoff") LocalDateTime cutoff);
+
     @Query("SELECT FUNCTION('date_part', 'hour', s.collectedAt) as hr, COUNT(s) FROM SampleOrder s WHERE s.collectedAt >= :since GROUP BY FUNCTION('date_part', 'hour', s.collectedAt) ORDER BY hr ASC")
     List<Object[]> findHourlyIntakeDistribution(@Param("since") LocalDateTime since);
 

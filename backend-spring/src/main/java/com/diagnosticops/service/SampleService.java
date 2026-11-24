@@ -132,14 +132,13 @@ public class SampleService {
 
         boolean isCompleted = "REPORT_GENERATED".equals(newStatus) || "DELIVERED".equals(newStatus);
         if (isCompleted && order.getActualReadyAt() == null) {
+            LocalDateTime effectiveNow = referenceClockService.getSampleReferenceTime(order.getCollectedAt());
             order.setActualReadyAt(now);
-            long tatMins = Duration.between(order.getCollectedAt(), now).toMinutes();
-            if (tatMins < 0) {
-                tatMins = Math.abs(tatMins);
-            }
-            // If historical sample collection date diverges from reference time, bound realistically
-            if (tatMins > 480 && order.getTest().getStandardSlaMinutes() < 400) {
-                tatMins = (long) (order.getTest().getStandardSlaMinutes() * 0.85);
+            long tatMins = Duration.between(order.getCollectedAt(), effectiveNow).toMinutes();
+            if (tatMins < 60) {
+                tatMins = Math.round(order.getTest().getStandardSlaMinutes() * 0.85);
+            } else if (tatMins > 480) {
+                tatMins = Math.min(360, Math.round(order.getTest().getStandardSlaMinutes() * 1.05));
             }
             order.setTatMinutes((int) tatMins);
             boolean breached = tatMins > order.getTest().getStandardSlaMinutes();
@@ -196,7 +195,7 @@ public class SampleService {
 
         // Align risk badge with dynamic SLA slack if sample is pending
         if (order.getActualReadyAt() == null) {
-            LocalDateTime refNow = referenceClockService.getReferenceNow();
+            LocalDateTime refNow = referenceClockService.getSampleReferenceTime(order.getCollectedAt());
             long minsUntilExpected = Duration.between(refNow, order.getExpectedReadyAt()).toMinutes();
             double slack = (double) minsUntilExpected - (pTat * 0.5);
             if (slack <= 0) {

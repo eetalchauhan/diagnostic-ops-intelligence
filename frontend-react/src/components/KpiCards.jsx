@@ -26,7 +26,7 @@ export default function KpiCards({ dashboard }) {
     {
       title: "Active Pending Queue",
       value: activePending.toLocaleString(),
-      subtitle: "Active in-centre vials",
+      subtitle: "In-centre vials",
       badge: "Priority Sorted",
       badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
       icon: Activity,
@@ -53,7 +53,7 @@ export default function KpiCards({ dashboard }) {
     {
       title: "On-Time SLA Compliance",
       value: `${complianceRate.toFixed(1)}%`,
-      subtitle: "Within target window",
+      subtitle: "Within SLA target",
       badge: "NABL Target",
       badgeColor: isComplianceOptimal ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200",
       icon: ShieldCheck,

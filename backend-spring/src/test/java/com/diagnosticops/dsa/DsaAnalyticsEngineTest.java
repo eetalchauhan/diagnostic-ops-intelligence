@@ -32,6 +32,10 @@ class DsaAnalyticsEngineTest {
             public LocalDateTime getReferenceNow() {
                 return fixedNow;
             }
+            @Override
+            public LocalDateTime getSampleReferenceTime(LocalDateTime collectedAt) {
+                return fixedNow;
+            }
         };
         engine = new DsaAnalyticsEngine(null, clockService);
 
