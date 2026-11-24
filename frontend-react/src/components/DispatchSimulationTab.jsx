@@ -36,19 +36,19 @@ export default function DispatchSimulationTab() {
   return (
     <div className="space-y-6">
       {/* Header and Controls */}
-      <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
             <h3 className="text-base font-bold text-slate-900">
               Laboratory Dispatch & Schedule Optimization Engine
             </h3>
-            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200 flex items-center space-x-1">
-              <Cpu className="w-3 h-3 text-purple-600" />
-              <span>FIFO Queue + Chained Comparator</span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200 flex items-center space-x-1">
+              <Cpu className="w-3.5 h-3.5 text-teal-600" />
+              <span>Dynamic Multi-Parameter Scheduler</span>
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Simulates laboratory batch dispatch sequences prioritized by breach severity, STAT status, and earliest SLA deadlines.
+            Simulates laboratory batch dispatch sequences prioritized by breach severity, STAT status, and earliest SLA deadlines
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export default function DispatchSimulationTab() {
           <button
             onClick={loadData}
             disabled={loading}
-            className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors"
+            className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors shadow-xs"
             title="Re-run Simulation"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-teal-600' : ''}`} />
@@ -77,12 +77,12 @@ export default function DispatchSimulationTab() {
         </div>
       </div>
 
-      {/* Latency Comparison Card for Research Paper */}
+      {/* Operational Latency Comparison Card */}
       {benchmark && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl p-5 shadow-sm border border-slate-700">
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl p-5 shadow-xs border border-slate-700 hover:-translate-y-0.5 transition-transform duration-200">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-teal-400">In-Memory Min-Heap</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-teal-400">Real-Time Dispatch Engine</span>
               <Zap className="w-4 h-4 text-teal-400" />
             </div>
             <h4 className="text-2xl font-black font-mono mt-2">
@@ -93,9 +93,9 @@ export default function DispatchSimulationTab() {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+          <div className="bg-white rounded-xl p-5 shadow-xs border border-slate-200/80 hover:-translate-y-0.5 transition-transform duration-200">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">PostgreSQL Query</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Database Query Sync</span>
               <Clock className="w-4 h-4 text-slate-400" />
             </div>
             <h4 className="text-2xl font-black font-mono text-slate-900 mt-2">
@@ -106,20 +106,20 @@ export default function DispatchSimulationTab() {
             </p>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-900 to-indigo-900 text-white rounded-xl p-5 shadow-sm border border-purple-700">
+          <div className="bg-gradient-to-br from-teal-900 to-slate-900 text-white rounded-xl p-5 shadow-xs border border-teal-700/60 hover:-translate-y-0.5 transition-transform duration-200">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-purple-300">Throughput Speedup</span>
-              <Award className="w-4 h-4 text-purple-300" />
+              <span className="text-xs font-bold uppercase tracking-wider text-teal-300">Throughput Advantage</span>
+              <Award className="w-4 h-4 text-teal-300" />
             </div>
-            <h4 className="text-2xl font-black font-mono mt-2">
+            <h4 className="text-2xl font-black font-mono mt-2 text-teal-200">
               {benchmark.speedupMultiplier}x
             </h4>
-            <p className="text-[11px] text-purple-200 mt-1">
-              Custom DSA latency advantage
+            <p className="text-[11px] text-teal-300/80 mt-1">
+              Optimized triage dispatch speedup
             </p>
           </div>
 
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+          <div className="bg-white rounded-xl p-5 shadow-xs border border-slate-200/80 hover:-translate-y-0.5 transition-transform duration-200">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Active Evaluated</span>
               <Layers className="w-4 h-4 text-slate-400" />
@@ -128,19 +128,19 @@ export default function DispatchSimulationTab() {
               {benchmark.activePendingSamplesCount}
             </h4>
             <p className="text-[11px] text-slate-500 mt-1">
-              Samples in dispatch heap
+              Specimens actively prioritized
             </p>
           </div>
         </div>
       )}
 
       {/* Sequenced Batch Schedule Table */}
-      <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
           <h4 className="text-sm font-bold text-slate-900">
-            Prioritized Batch Dispatch Schedule (Ranked by Chained Comparator)
+            Prioritized Batch Dispatch Schedule (Automated Clinical Urgency Sequence)
           </h4>
-          <span className="text-xs text-slate-500">
+          <span className="text-xs font-semibold text-slate-500">
             Sequenced 1 to {simulationItems.length}
           </span>
         </div>
@@ -148,7 +148,7 @@ export default function DispatchSimulationTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider">
+              <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
                 <th className="py-3 px-4">Batch Seq</th>
                 <th className="py-3 px-4">Barcode</th>
                 <th className="py-3 px-4">Centre</th>
@@ -183,10 +183,10 @@ export default function DispatchSimulationTab() {
                           : 'bg-amber-50 text-amber-700 border-amber-200'
                       }`}
                     >
-                      {item.processingType}
+                      {item.processingType === 'IN_HOUSE' ? 'In-House Testing' : 'External Hub'}
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 space-x-1.5">
+                  <td className="py-3.5 px-4 space-x-1.5 whitespace-nowrap">
                     {item.isSlaBreached && (
                       <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 font-bold text-[10px]">
                         BREACHED
@@ -206,11 +206,11 @@ export default function DispatchSimulationTab() {
                   <td className="py-3.5 px-4">
                     <span
                       className={`font-semibold text-xs ${
-                        item.recommendation.startsWith('CRITICAL')
+                        item.recommendation.startsWith('EMERGENCY_STAT')
                           ? 'text-rose-700 font-bold'
-                          : item.recommendation.startsWith('HIGH')
+                          : item.recommendation.startsWith('HUB_LOGISTICS')
                           ? 'text-amber-700 font-bold'
-                          : 'text-slate-600'
+                          : 'text-slate-700'
                       }`}
                     >
                       {item.recommendation}

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -21,15 +20,23 @@ public class AnalyticsService {
 
     private final DsaAnalyticsEngine dsaAnalyticsEngine;
     private final SampleOrderRepository sampleOrderRepository;
+    private final ReferenceClockService referenceClockService;
 
     public DashboardKpiResponse getDashboardKpi() {
-        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime refNow = referenceClockService.getReferenceNow();
+        LocalDateTime startOfDay = refNow.toLocalDate().atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1);
 
         long totalOrdersToday = sampleOrderRepository.countByCollectedAtBetween(startOfDay, endOfDay);
         int activePending = dsaAnalyticsEngine.getActivePendingCount();
         double rollingTat = Math.round(dsaAnalyticsEngine.getRollingAverageTatMinutes() * 10.0) / 10.0;
-        double rollingBreach = Math.round(dsaAnalyticsEngine.getRollingBreachPercentage() * 10.0) / 10.0;
+        
+        // Active breach rate reflects pending samples past SLA, falling back to rolling breach percentage
+        double activeBreach = dsaAnalyticsEngine.getActiveBreachPercentage();
+        if (activeBreach <= 0.0) {
+            activeBreach = Math.round(dsaAnalyticsEngine.getRollingBreachPercentage() * 10.0) / 10.0;
+        }
+        double rollingBreach = activeBreach;
         double velocity = Math.round(dsaAnalyticsEngine.getHourlyThroughputVelocity() * 10.0) / 10.0;
 
         Map<String, Long> procCounts = dsaAnalyticsEngine.getProcessingTypeCounts();
@@ -44,17 +51,29 @@ public class AnalyticsService {
         List<SampleTriageNode> topAtRisk = dsaAnalyticsEngine.getTopAtRiskSamples(15);
         Map<String, Object> latencyBench = dsaAnalyticsEngine.benchmarkTriageRetrievalLatency();
 
-        // Hourly intake distribution today
-        List<Object[]> hourlyDb = sampleOrderRepository.findHourlyIntakeDistribution(startOfDay.minusDays(1));
-        List<Map<String, Object>> hourlyList = new ArrayList<>();
+        // Hourly intake distribution today across operational operating hours
+        List<Object[]> hourlyDb = sampleOrderRepository.findHourlyIntakeDistributionBetween(startOfDay, endOfDay);
+        Map<Integer, Long> hourMap = new LinkedHashMap<>();
+        for (int h = 7; h <= 19; h++) {
+            hourMap.put(h, 0L);
+        }
         for (Object[] row : hourlyDb) {
-            Map<String, Object> item = new HashMap<>();
             Number hr = (Number) row[0];
             Number cnt = (Number) row[1];
-            item.put("hour", hr != null ? hr.intValue() : 0);
-            item.put("volume", cnt != null ? cnt.longValue() : 0);
-            hourlyList.add(item);
+            if (hr != null && cnt != null) {
+                hourMap.put(hr.intValue(), cnt.longValue());
+            }
         }
+
+        List<Map<String, Object>> hourlyList = new ArrayList<>();
+        hourMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(e -> {
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("hour", e.getKey());
+                    item.put("volume", e.getValue());
+                    hourlyList.add(item);
+                });
 
         return DashboardKpiResponse.builder()
                 .totalOrdersToday(totalOrdersToday)

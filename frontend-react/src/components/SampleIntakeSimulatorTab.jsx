@@ -64,17 +64,17 @@ export default function SampleIntakeSimulatorTab({ onSampleCreated, onNavigateLi
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
       {/* Left Form: Phlebotomy Intake Console */}
-      <div className="lg:col-span-7 bg-white rounded-xl p-6 border border-slate-200/90 shadow-sm">
+      <div className="lg:col-span-7 bg-white rounded-xl p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow">
         <div className="flex items-center space-x-2.5 pb-4 border-b border-slate-100">
           <div className="p-2 rounded-lg bg-teal-50 text-teal-700 border border-teal-200">
             <PackagePlus className="w-5 h-5 stroke-[2.2]" />
           </div>
           <div>
             <h3 className="text-base font-bold text-slate-900">
-              Diagnostic Specimen Intake Simulator
+              Diagnostic Specimen Intake Console
             </h3>
             <p className="text-xs text-slate-500">
-              Simulates counter registration, barcode issuance, and real-time ML delay risk inference.
+              Registration, barcode issuance, and real-time turnaround time estimation
             </p>
           </div>
         </div>
@@ -91,9 +91,9 @@ export default function SampleIntakeSimulatorTab({ onSampleCreated, onNavigateLi
                   type="button"
                   key={c.id}
                   onClick={() => setCentreId(c.id)}
-                  className={`p-3 rounded-lg border text-left transition-all ${
+                  className={`p-3 rounded-xl border text-left transition-all ${
                     centreId === c.id
-                      ? 'border-teal-500 bg-teal-50/50 ring-2 ring-teal-500/20'
+                      ? 'border-teal-500 bg-teal-50/60 ring-2 ring-teal-500/20'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
                 >
@@ -111,49 +111,39 @@ export default function SampleIntakeSimulatorTab({ onSampleCreated, onNavigateLi
                 Diagnostic Test Order
               </label>
               <span className="text-[11px] font-semibold text-slate-500">
-                Standard SLA: <span className="font-mono text-teal-700">{selectedTest.sla} min</span>
+                Standard SLA: <span className="font-mono text-teal-700 font-bold">{selectedTest.sla} min</span>
               </span>
             </div>
 
             <select
               value={testCode}
               onChange={(e) => setTestCode(e.target.value)}
-              className="w-full text-xs font-medium px-3.5 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+              className="w-full text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
             >
               {TEST_OPTIONS.map((t) => (
                 <option key={t.code} value={t.code}>
-                  {t.code} - {t.name} ({t.type === 'IN_HOUSE' ? 'In-House' : 'External Hub'} | SLA: {t.sla}m | ₹{t.price})
+                  {t.code} — {t.name} ({t.type === 'IN_HOUSE' ? 'In-House Testing' : 'External Hub'}, ₹{t.price})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Test Metadata Card */}
-          <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+          {/* Logistics Metadata */}
+          <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
             <div>
-              <span className="text-slate-500">Processing Type: </span>
-              <span
-                className={`font-semibold px-2 py-0.5 rounded-full ${
-                  selectedTest.type === 'IN_HOUSE'
-                    ? 'bg-teal-100 text-teal-800'
-                    : 'bg-amber-100 text-amber-800'
-                }`}
-              >
-                {selectedTest.type}
+              <span className="text-slate-500">Testing Route: </span>
+              <span className="font-bold text-slate-800">
+                {selectedTest.type === 'IN_HOUSE' ? 'In-House Analyzer' : 'Regional Hub Logistics'}
               </span>
             </div>
             <div>
-              <span className="text-slate-500">Catalog Price: </span>
-              <span className="font-bold text-slate-900 font-mono">₹{selectedTest.price}</span>
-            </div>
-            <div>
               <span className="text-slate-500">Logistics Cutoff: </span>
-              <span className="font-semibold text-slate-700 font-mono">13:00 (1 PM)</span>
+              <span className="font-bold text-slate-800 font-mono">13:00 (1:00 PM)</span>
             </div>
           </div>
 
           {/* STAT Emergency Flag */}
-          <div className="flex items-center justify-between p-3.5 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors">
+          <div className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors">
             <div className="flex items-center space-x-3">
               <div className={`p-2 rounded-lg ${isStatUrgent ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-500'}`}>
                 <Flame className="w-4 h-4 stroke-[2.5]" />
@@ -161,7 +151,7 @@ export default function SampleIntakeSimulatorTab({ onSampleCreated, onNavigateLi
               <div>
                 <p className="text-xs font-bold text-slate-900">STAT Emergency Specimen</p>
                 <p className="text-[11px] text-slate-500">
-                  Grants highest priority in the Java Min-Heap SLA triage queue.
+                  Flags specimen for immediate STAT priority dispatch across analyzer queues.
                 </p>
               </div>
             </div>
@@ -187,12 +177,12 @@ export default function SampleIntakeSimulatorTab({ onSampleCreated, onNavigateLi
               value={customBarcode}
               onChange={(e) => setCustomBarcode(e.target.value)}
               placeholder="Leave blank to auto-generate: LPL-DL-LP-01-YYMMDD-XXXXX"
-              className="w-full text-xs font-mono px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           {error && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center space-x-2">
+            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center space-x-2">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -207,7 +197,7 @@ export default function SampleIntakeSimulatorTab({ onSampleCreated, onNavigateLi
             {loading ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Simulating Intake & XGBoost Inference...</span>
+                <span>Processing Intake & Turnaround Assessment...</span>
               </>
             ) : (
               <>
@@ -222,56 +212,56 @@ export default function SampleIntakeSimulatorTab({ onSampleCreated, onNavigateLi
       {/* Right Column: Live AI Prediction Result */}
       <div className="lg:col-span-5 space-y-4">
         {result ? (
-          <div className="bg-white rounded-xl p-6 border border-slate-200/90 shadow-sm relative overflow-hidden">
+          <div className="bg-white rounded-xl p-6 border border-slate-200/80 shadow-xs relative overflow-hidden animate-in fade-in duration-200">
             <div className="absolute top-0 right-0 w-28 h-28 bg-teal-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
 
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-emerald-600" />
-                <h4 className="text-sm font-bold text-slate-900">Specimen Ingested</h4>
+                <h4 className="text-sm font-bold text-slate-900">Specimen Ingested Successfully</h4>
               </div>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">
                 ID #{result.sampleId}
               </span>
             </div>
 
             {/* Barcode Display */}
-            <div className="mt-4 p-3 bg-slate-900 text-white rounded-lg text-center">
+            <div className="mt-4 p-3.5 bg-slate-900 text-white rounded-xl text-center shadow-xs">
               <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Specimen Tube Barcode</p>
               <p className="font-mono text-base font-bold tracking-wider text-teal-400 mt-0.5">
                 {result.barcode}
               </p>
             </div>
 
-            {/* XGBoost Predictive Output Card */}
+            {/* Predictive Output Card */}
             <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                <span className="text-slate-600">Standard Test SLA:</span>
+              <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-slate-600 font-medium">Standard Test SLA:</span>
                 <span className="font-mono font-bold text-slate-900">{result.standardSlaMinutes} minutes</span>
               </div>
 
-              <div className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-teal-50 border border-teal-200">
+              <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-teal-50 border border-teal-200">
                 <span className="text-teal-900 font-semibold flex items-center space-x-1">
-                  <Cpu className="w-3.5 h-3.5 text-teal-700" />
-                  <span>XGBoost Predicted TAT:</span>
+                  <Clock className="w-3.5 h-3.5 text-teal-700" />
+                  <span>Estimated Turnaround Time:</span>
                 </span>
                 <span className="font-mono font-black text-teal-950 text-sm">
                   {Math.round(result.predictedTatMinutes || 0)} min
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                <span className="text-slate-600">Breach Probability:</span>
+              <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-slate-600 font-medium">Delay Breach Probability:</span>
                 <span className="font-mono font-bold text-slate-900">
                   {((result.delayProbability || 0) * 100).toFixed(1)}%
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-                <span className="text-slate-600">Dynamic Risk Category:</span>
+              <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-slate-600 font-medium">Clinical Urgency Category:</span>
                 <span
-                  className={`px-2 py-0.5 rounded-full font-bold text-[11px] ${
-                    result.riskLevel === 'HIGH'
+                  className={`px-2.5 py-0.5 rounded-full font-bold text-[11px] whitespace-nowrap ${
+                    result.riskLevel === 'CRITICAL' || result.riskLevel === 'HIGH'
                       ? 'bg-rose-100 text-rose-800'
                       : result.riskLevel === 'MEDIUM'
                       ? 'bg-amber-100 text-amber-800'
@@ -287,33 +277,33 @@ export default function SampleIntakeSimulatorTab({ onSampleCreated, onNavigateLi
             <div className="mt-5 pt-4 border-t border-slate-100">
               <button
                 onClick={onNavigateLive}
-                className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg text-xs font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors border border-teal-200"
+                className="w-full flex items-center justify-center space-x-2 py-2.5 px-3 rounded-xl text-xs font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors border border-teal-200"
               >
-                <span>View in Live Min-Heap Triage Table</span>
+                <span>View in Live Triage Queue</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-xl p-8 border border-slate-200/90 shadow-sm text-center">
-            <Cpu className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-            <h4 className="text-sm font-bold text-slate-800">Awaiting Specimen Submission</h4>
+          <div className="bg-white rounded-xl p-8 border border-slate-200/80 shadow-xs text-center">
+            <Clock className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+            <h4 className="text-sm font-bold text-slate-800">Awaiting Specimen Registration</h4>
             <p className="text-xs text-slate-500 max-w-xs mx-auto mt-1">
-              Select franchise parameters on the left and submit to trigger real-time Python XGBoost ML inference and Java PriorityQueue insertion.
+              Select franchise parameters on the left and submit to assess turnaround estimates and queue priority.
             </p>
           </div>
         )}
 
         {/* Informational Domain Callout */}
-        <div className="bg-slate-900 text-white rounded-xl p-5 shadow-sm text-xs space-y-2">
+        <div className="bg-slate-900 text-white rounded-xl p-5 shadow-xs text-xs space-y-2.5 border border-slate-800">
           <p className="font-bold text-teal-400 flex items-center space-x-1.5">
             <ShieldCheck className="w-4 h-4" />
-            <span>Franchise Operational Dynamics Active</span>
+            <span>Franchise Operational Protocol</span>
           </p>
           <ul className="text-slate-300 space-y-1.5 list-disc list-inside">
             <li>Samples registered before 10:30 AM account for fasting rush queue congestion.</li>
             <li>External hub samples collected after 1:00 PM (13:00) automatically reflect overnight courier hold.</li>
-            <li>STAT specimens bypass standard queues and jump to the top of the Min-Heap.</li>
+            <li>STAT specimens bypass routine queues and are dispatched with immediate clinical priority.</li>
           </ul>
         </div>
       </div>

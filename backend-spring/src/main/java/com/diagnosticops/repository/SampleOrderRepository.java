@@ -31,8 +31,14 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Long> 
     @Query("SELECT s.test.processingType, COUNT(s) FROM SampleOrder s GROUP BY s.test.processingType")
     List<Object[]> findProcessingTypeCounts();
 
+    @Query("SELECT MAX(s.collectedAt) FROM SampleOrder s")
+    Optional<LocalDateTime> findLatestCollectedAt();
+
     @Query("SELECT FUNCTION('date_part', 'hour', s.collectedAt) as hr, COUNT(s) FROM SampleOrder s WHERE s.collectedAt >= :since GROUP BY FUNCTION('date_part', 'hour', s.collectedAt) ORDER BY hr ASC")
     List<Object[]> findHourlyIntakeDistribution(@Param("since") LocalDateTime since);
+
+    @Query("SELECT FUNCTION('date_part', 'hour', s.collectedAt) as hr, COUNT(s) FROM SampleOrder s WHERE s.collectedAt >= :startTime AND s.collectedAt < :endTime GROUP BY FUNCTION('date_part', 'hour', s.collectedAt) ORDER BY hr ASC")
+    List<Object[]> findHourlyIntakeDistributionBetween(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
     @Query("SELECT COUNT(s) FROM SampleOrder s WHERE s.centre.centreId = :centreId AND s.collectedAt <= :cutoff AND (s.actualReadyAt IS NULL OR s.actualReadyAt > :cutoff)")
     int countActiveQueueDepthAtCentre(@Param("centreId") Integer centreId, @Param("cutoff") LocalDateTime cutoff);

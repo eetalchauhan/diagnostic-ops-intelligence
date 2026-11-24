@@ -3,38 +3,37 @@ package com.diagnosticops.dsa;
 import com.diagnosticops.entity.CollectionCentre;
 import com.diagnosticops.entity.SampleOrder;
 import com.diagnosticops.entity.TestCatalog;
-import com.diagnosticops.repository.SampleOrderRepository;
+import com.diagnosticops.service.ReferenceClockService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class DsaAnalyticsEngineTest {
-
-    @Mock
-    private SampleOrderRepository sampleOrderRepository;
 
     private DsaAnalyticsEngine engine;
     private CollectionCentre centre;
     private TestCatalog cbcTest;
     private TestCatalog vitdTest;
+    private LocalDateTime fixedNow;
 
     @BeforeEach
     void setUp() {
-        engine = new DsaAnalyticsEngine(sampleOrderRepository);
+        fixedNow = LocalDateTime.now();
+        ReferenceClockService clockService = new ReferenceClockService(null) {
+            @Override
+            public LocalDateTime getReferenceNow() {
+                return fixedNow;
+            }
+        };
+        engine = new DsaAnalyticsEngine(null, clockService);
 
         centre = CollectionCentre.builder()
                 .centreId(1)
@@ -66,7 +65,7 @@ class DsaAnalyticsEngineTest {
     @Test
     @DisplayName("Min-Heap: Emergency STAT samples should always be prioritized first")
     void testMinHeapStatPriorityOrdering() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = fixedNow;
 
         // Sample 1: Non-STAT with negative slack (already near breach)
         SampleOrder normalOrder = SampleOrder.builder()
@@ -107,7 +106,7 @@ class DsaAnalyticsEngineTest {
     @Test
     @DisplayName("Min-Heap: Orders samples by lowest dynamic SLA slack when STAT status is identical")
     void testMinHeapSlaSlackOrdering() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = fixedNow;
 
         // Sample 1: Healthy SLA slack (expected in 120 mins, tat predicted 60 mins -> slack ~ 90 mins)
         SampleOrder healthyOrder = SampleOrder.builder()
@@ -145,7 +144,7 @@ class DsaAnalyticsEngineTest {
     @Test
     @DisplayName("Sliding Window: Correctly computes rolling 4-hour moving average TAT and evicts expired records")
     void testSlidingWindowEvictionAndAverages() {
-        LocalDateTime baseTime = LocalDateTime.now();
+        LocalDateTime baseTime = fixedNow;
 
         // Sample completed 60 minutes ago: 100 min TAT (non-breached)
         engine.recordSampleCompletion(301L, baseTime.minusMinutes(60), 100, false, "IN_HOUSE");
@@ -159,7 +158,7 @@ class DsaAnalyticsEngineTest {
         // Breach percentage should be 1 / 2 = 50.0%
         assertEquals(50.0, engine.getRollingBreachPercentage(), 0.01);
 
-        // Record a third sample completed 300 minutes in future (which makes samples 301 and 302 older than 240 mins)
+        // Record a third sample completed 250 minutes in future (which makes samples 301 and 302 older than 240 mins)
         LocalDateTime futureTime = baseTime.plusMinutes(250);
         engine.recordSampleCompletion(303L, futureTime, 120, false, "IN_HOUSE");
 
@@ -189,7 +188,7 @@ class DsaAnalyticsEngineTest {
     @Test
     @DisplayName("Queue + Comparator: Correctly sequences batch dispatch simulation")
     void testChainedComparatorSimulation() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = fixedNow;
 
         SampleOrder breachedOrder = SampleOrder.builder()
                 .sampleId(401L)
@@ -236,7 +235,7 @@ class DsaAnalyticsEngineTest {
     @Test
     @DisplayName("Lifecycle Update: Departing delivered samples should be evicted from Min-Heap")
     void testLifecycleDepartureFromMinHeap() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = fixedNow;
 
         SampleOrder order = SampleOrder.builder()
                 .sampleId(501L)

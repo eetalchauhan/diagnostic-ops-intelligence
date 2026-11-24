@@ -15,6 +15,7 @@ export default function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [autoSync, setAutoSync] = useState(true);
 
   const loadDashboardData = useCallback(async (isBackground = false) => {
     if (!isBackground) setLoading(true);
@@ -41,19 +42,22 @@ export default function App() {
     loadDashboardData();
   }, [loadDashboardData]);
 
-  // Auto-refresh polling every 15 seconds when viewing Live tab
+  // Live Auto-Sync polling every 30 seconds when enabled and on Live view
   useEffect(() => {
-    if (activeTab !== 'live') return;
+    if (activeTab !== 'live' || !autoSync) return;
 
     const intervalId = setInterval(() => {
       loadDashboardData(true);
-    }, 15000);
+    }, 30000);
 
     return () => clearInterval(intervalId);
-  }, [activeTab, loadDashboardData]);
+  }, [activeTab, autoSync, loadDashboardData]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900 selection:bg-teal-500 selection:text-white">
+      {/* Top Subtle Gradient Accents */}
+      <div className="h-1 bg-gradient-to-r from-teal-600 via-indigo-600 to-teal-500 w-full" />
+
       {/* Top Navigation & Live Header */}
       <Header
         activeTab={activeTab}
@@ -61,22 +65,24 @@ export default function App() {
         isRefreshing={isRefreshing}
         onRefresh={() => loadDashboardData(false)}
         lastUpdated={lastUpdated}
+        autoSync={autoSync}
+        setAutoSync={setAutoSync}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Error Notification */}
         {error && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center justify-between shadow-sm">
             <div className="flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
               <span>
-                Backend Connection Error: {error}. Ensure Spring Boot backend is active on <code className="font-mono">{API_BASE_URL}</code>.
+                Backend Connection Error: {error}. Ensure Spring Boot backend is active on <code className="font-mono bg-rose-100 px-1 py-0.5 rounded">{API_BASE_URL}</code>.
               </span>
             </div>
             <button
               onClick={() => loadDashboardData(false)}
-              className="px-2.5 py-1 rounded-md bg-rose-200 hover:bg-rose-300 font-bold transition-colors"
+              className="px-3 py-1 rounded-lg bg-rose-200 hover:bg-rose-300 font-bold transition-colors"
             >
               Retry
             </button>
@@ -90,10 +96,12 @@ export default function App() {
 
         {/* Dynamic Tab Views */}
         {loading && !dashboard ? (
-          <div className="h-96 flex flex-col items-center justify-center space-y-3">
-            <RefreshCw className="w-8 h-8 text-teal-600 animate-spin" />
-            <p className="text-sm font-semibold text-slate-700">Connecting to Diagnostic Ops Engine...</p>
-            <p className="text-xs text-slate-400">Hydrating PriorityQueue Min-Heap and Sliding Window</p>
+          <div className="h-96 flex flex-col items-center justify-center space-y-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+            <div className="p-4 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100">
+              <RefreshCw className="w-8 h-8 animate-spin" />
+            </div>
+            <p className="text-sm font-bold text-slate-800">Connecting to Diagnostic Operations Center...</p>
+            <p className="text-xs text-slate-400">Synchronizing live specimen tracking and turnaround queues</p>
           </div>
         ) : (
           <>
@@ -123,21 +131,19 @@ export default function App() {
       </main>
 
       {/* Clinical Platform Footer */}
-      <footer className="bg-white border-t border-slate-200 py-4 mt-auto">
+      <footer className="bg-white border-t border-slate-200/80 py-4 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
           <div className="flex items-center space-x-2">
-            <span className="font-bold text-slate-700">Dr Lal PathLabs Franchise Analytics</span>
+            <span className="font-bold text-slate-700">Dr Lal PathLabs Diagnostic Intelligence</span>
             <span>•</span>
             <span>Delhi-NCR Network (DL-LP-01, DL-LP-02, DL-LP-03)</span>
           </div>
-          <div className="flex items-center space-x-3 text-[11px] font-mono">
-            <span>Spring Boot 3.2</span>
+          <div className="flex items-center space-x-3 text-[11px] font-medium text-slate-400">
+            <span>Clinical Operations Center</span>
             <span>•</span>
-            <span>XGBoost ML v1.0</span>
+            <span>Real-Time Dynamic Triage</span>
             <span>•</span>
-            <span>Min-Heap PriorityQueue</span>
-            <span>•</span>
-            <span>ArrayDeque Sliding Window</span>
+            <span>Predictive Turnaround Intelligence</span>
           </div>
         </div>
       </footer>
