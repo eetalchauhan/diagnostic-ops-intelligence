@@ -89,8 +89,8 @@ export default function App() {
           </div>
         )}
 
-        {/* Global KPI Cards (Shown on Live and Dispatch views) */}
-        {(activeTab === 'live' || activeTab === 'dispatch') && (
+        {/* Global KPI Cards (Shown on Live view) */}
+        {activeTab === 'live' && (
           <KpiCards dashboard={dashboard} />
         )}
 
@@ -124,7 +124,7 @@ export default function App() {
             )}
 
             {activeTab === 'dispatch' && (
-              <DispatchSimulationTab />
+              <DispatchSimulationTab dashboard={dashboard} />
             )}
           </>
         )}
